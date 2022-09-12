@@ -1,0 +1,42 @@
+version: "2"
+services:
+    proxy:
+        image: nginx:1.13-alpine 
+        container_name: proxy
+        networks:
+            - internet
+            - no-internet
+        volumes:
+            - ./vhost.conf:/etc/nginx/conf.d/default.conf
+        ports:
+            - "127.0.0.1:27362:80"
+    admapi:
+        build: .
+        ports: 
+            - "80"
+        volumes:
+            - ./app:/var/www/
+        networks:
+            - no-internet
+    admapi-db:
+        image: mysql:5.7
+        environment:
+            MYSQL_DATABASE: apiadm
+            MYSQL_USER: apiadm_user
+            MYSQL_PASSWORD: 3cfd5296bd6986408e4da269f47fd3a8
+            MYSQL_ROOT_PASSWORD: 3cfd5296bd6986408e4da269f47fd3a8
+        volumes:
+            - ./dump:/docker-entrypoint-initdb.d
+            - admapi:/var/lib/mysql  
+        networks:
+            - internet
+            - no-internet
+volumes:
+    admapi:
+networks:
+  internet:
+    external:
+      name: internet
+  no-internet:
+    external:
+      name: no-internet

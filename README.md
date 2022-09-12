@@ -1,1 +1,2 @@
-# admin-manager-api
+## Configuration
++ `docker compose up --build -d`
