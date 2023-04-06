@@ -36,8 +36,7 @@
 
             if(!checkAuth()){
                 die(json_encode(["status"=>403,"status_text"=>"forbidden"]));
-            }
-            echo select('logs');
+            }            echo select('logs');
 
         });
 
@@ -75,7 +74,7 @@
             $type = $file['type'];
             $ext = end(explode(".",$name));
 
-            if (1000<$file['size']) {
+            if (6000<$file['size']) {
                 echo json_encode(["status"=>403,"status_text"=>"forbidden, invalid size."]);
                 die;
             }
@@ -103,13 +102,17 @@
                 if(!checkAuth()){
                     die(json_encode(["status"=>403,"status_text"=>"forbidden"]));
                 }
-                
-                $xml = file_get_contents('php://input');
-                $data = new SimpleXMLElement($xml, 2, 0);
+                try{
+                        $xml = file_get_contents('php://input');
+                        $data = new SimpleXMLElement($xml, 2, 0);
 
-                if ($data == null){
-                    echo json_encode(["status"=>500,"status_text"=>"error in parsing XML."]);
-                    die;
+                        if ($data == null){
+                                echo json_encode(["status"=>500,"status_text"=>"error in parsing XML."]);
+                                die;
+                        }
+                }catch(Exception $e){
+                        echo json_encode(["status"=>500,"message"=>"Error in parsing XML"]);
+                        exit;
                 }
 
                 if ($data->task_name!="" && $data->task_deadline!="" && $data->task_authors!="") {
